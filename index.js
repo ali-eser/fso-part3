@@ -52,10 +52,21 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-    const person = request.body
+    const newPerson = request.body
     const randInt = (max) => Math.floor(Math.random() * max)
-    person.id = randInt(999999999999999)
-    persons = persons.concat(person)
+    const doesExist = persons.find(person => person.name === newPerson.name)
+    if (doesExist) {
+        response.status(400).send({
+                error: "name must be unique"
+        })
+    }
+    if (!newPerson.name || !newPerson.number) {
+        response.status(400).send({
+            error: "name and number fields must not be empty"
+        })
+    }
+    newPerson.id = randInt(999999999999999)
+    persons = persons.concat(newPerson)
     response.json(persons)
 })
 
