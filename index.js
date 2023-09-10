@@ -32,6 +32,17 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const id = parseInt(request.params.id)
+    const entry = persons.find(person => person.id === id)
+    if (entry) {
+        response.json(entry)
+    } else {
+        response.status(404).end()
+    }
+    
+})
+
 app.get('/info', (request, response) => {
     const currentTime = new Date();
     response.send(`<p>Phonebook has info for ${persons.length} people</p>
