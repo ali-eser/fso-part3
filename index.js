@@ -3,11 +3,8 @@ const morgan = require('morgan')
 
 const app = express()
 
-// const logger = morgan('tiny')
-
 app.use(express.json())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     { 
@@ -43,7 +40,6 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
     const id = parseInt(request.params.id)
     const entry = persons.find(person => person.id === id)
-
     if (entry) {
         response.json(entry)
     } else {
@@ -54,13 +50,13 @@ app.get('/api/persons/:id', (request, response) => {
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
-    
     response.status(204).end()
 })
 
 app.post('/api/persons', (request, response) => {
     const newPerson = request.body
     const randInt = (max) => Math.floor(Math.random() * max)
+    morgan.token('body', request => JSON.stringify(request.body))
     const doesExist = persons.find(person => person.name === newPerson.name)
     if (doesExist) {
         response.status(400).send({
