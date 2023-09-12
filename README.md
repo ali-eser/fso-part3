@@ -1,3 +1,2 @@
 # fso-part3
- For exercises of specifically the part 3 of Full Stack Open
- In the part 3 of Full Stack Open, it was recommended to create a dedicated git repository for part 3's exercises: "It's recommended to do all of the exercises from this part into a new dedicated git repository, and place your source code right at the root of the repository. Otherwise, you will run into problems in exercise 3.10."
+https://phonebook-exercise-2fno.onrender.com
