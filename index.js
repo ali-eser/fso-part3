@@ -44,28 +44,23 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const newPerson = request.body
     console.log(newPerson.name)
 
-    if (!newPerson.name || !newPerson.number) {
-        response.status(400).send({
-            error: "name and number fields must not be empty"
+    const person = new Person({
+        name: newPerson.name,
+        number: newPerson.number
+    })
+    person.save()
+        .then(result => {
+            response.json(result)
         })
-    } else {
-        const person = new Person({
-            name: newPerson.name,
-            number: newPerson.number
-        })
-        person.save().then(savedPerson => {
-            response.json(savedPerson)
-        })
-    }
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response) => {
-    console.log(request.body.number)
-    Person.findByIdAndUpdate(request.params.id, { number:request.body.number })
+    Person.findByIdAndUpdate(request.params.id, { number:request.body.number }, { runValidators: true })
         .then(result => {
             console.log(result)
             response.status(204).end()
@@ -88,8 +83,9 @@ const errorHandler = (error, request, response, next) => {
   
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
-    } 
-  
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).send({ error: error.message })
+    }
     next(error)
   }
 
