@@ -53,29 +53,34 @@ app.post('/api/persons', (request, response) => {
             error: "name and number fields must not be empty"
         })
     } else {
-        Person.find({ name: newPerson.name })
-            .then(person => {
-                if (person.length > 0) {
-                    response.status(400).send({
-                        error: "username must be unique"
-                    })
-                } else {
-                    const person = new Person({
-                        name: newPerson.name,
-                        number: newPerson.number
-                    })
-                    person.save().then(savedPerson => {
-                        response.json(savedPerson)
-                    })
-                }
-            })
+        const person = new Person({
+            name: newPerson.name,
+            number: newPerson.number
+        })
+        person.save().then(savedPerson => {
+            response.json(savedPerson)
+        })
     }
+})
+
+app.put('/api/persons/:id', (request, response) => {
+    console.log(request.body.number)
+    Person.findByIdAndUpdate(request.params.id, { number:request.body.number })
+        .then(result => {
+            console.log(result)
+            response.status(204).end()
+        })
 })
 
 app.get('/info', (request, response) => {
     const currentTime = new Date();
-    response.send(`<p>Phonebook has info for ${persons.length} people</p>
+    Person.find({})
+        .then(result => {
+            response.send(`<p>Phonebook has info for ${result.length} people</p>
                     <p>${currentTime}</p>`)
+        })
+        .catch(error => next(error))
+    
 })
 
 const errorHandler = (error, request, response, next) => {
